@@ -1,0 +1,12 @@
+# Modules
+/**/node_modules
+
+# Certificates SSL
+/**/server.crt
+/**/server.key
+
+# Dotfiles
+/**/.env
+
+# Build Files
+/**/dist

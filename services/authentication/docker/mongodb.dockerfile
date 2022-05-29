@@ -1,0 +1,8 @@
+FROM mongo
+
+EXPOSE 27017
+
+ENV MONGO_INITDB_ROOT_USERNAME=root \
+    MONGO_INITDB_ROOT_PASSWORD=password
+
+LABEL maintainer "Ramon Paolo Maran"

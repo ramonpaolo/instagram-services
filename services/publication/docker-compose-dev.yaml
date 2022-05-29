@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+    nodejs:
+        build: 
+            dockerfile: ./docker/node-dev.dockerfile
+            context: .
+        image: r4deu51/publication_node_clone_instagram
+        container_name: publication_node_clone_instagram
+        ports:
+            - "3000"
+        volumes:
+            - ./:/app:rw
+        networks:
+            - network
+        environment:
+            - NODE_ENV=development
+        depends_on:
+            - mongodb
+    nginx:
+        build: 
+            dockerfile: ./docker/nginx.dockerfile
+            context: .
+        image: r4deu51/publication_nginx_clone_instagram
+        container_name: publication_nginx_clone_instagram
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            - network
+        depends_on:
+            - nodejs
+        restart: always
+
+    mongodb:
+        build: 
+            dockerfile: ./docker/mongodb.dockerfile
+            context: .
+        image: r4deu51/publication_mongodb_clone_instagram
+        container_name: publication_mongodb_clone_instagram
+        networks:
+            - network
+        restart: always
+
+networks:
+    network:
+        driver: bridge
