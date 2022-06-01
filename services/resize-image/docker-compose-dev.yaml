@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+    nodejs:
+        build: 
+            dockerfile: ./docker/node-dev.dockerfile
+            context: .
+        image: r4deu51/resize_node_clone_instagram
+        container_name: resize_node_clone_instagram
+        ports:
+            - "3000"
+        volumes:
+            - ./:/app:rw
+        networks:
+            - network
+        environment:
+            - NODE_ENV=development
+    nginx:
+        build: 
+            dockerfile: ./docker/nginx.dockerfile
+            context: .
+        image: r4deu51/resize_nginx_clone_instagram
+        container_name: resize_nginx_clone_instagram
+        ports:
+            - "446:443"
+        networks:
+            - network
+        depends_on:
+            - nodejs
+        restart: always
+
+networks:
+    network:
+        driver: bridge

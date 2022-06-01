@@ -22,7 +22,7 @@ services:
         image: r4deu51/authentication_nginx_clone_instagram
         container_name: authentication_nginx_clone_instagram
         ports:
-            - "443:443"
+            - "444:443"
         networks:
             - network
         depends_on:

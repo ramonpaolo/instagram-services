@@ -8,24 +8,14 @@ RUN yarn build
 
 # ---------
 
-FROM node:14.17-alpine AS apptest
-
-WORKDIR /app
-
-COPY --from=appbuild /app ./
-
-RUN yarn test:docker
-
-# ---------
-
 FROM node:14.17-alpine
 
 WORKDIR /app
 
 EXPOSE 3000
 
-COPY --from=apptest /app/dist ./dist
-COPY --from=apptest /app/server.* /app/package.json /app/yarn.lock ./
+COPY --from=appbuild /app/dist ./dist
+COPY --from=appbuild /app/server.* /app/package.json /app/yarn.lock /app/.env ./
 
 RUN yarn install --production
 

@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+    nodejs:
+        build:
+            dockerfile: ./docker/python.dockerfile
+            context: .
+        image: r4deu51/notification_python_clone_instagram
+        container_name: notification_python_clone_instagram
+        networks:
+            - network
+
+networks:
+    network:
+        driver: bridge

@@ -1,11 +1,9 @@
 import express from 'express'
-import compression from 'compression'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import fs from 'fs'
 import spdy from 'spdy'
 import helmet from 'helmet'
-import expressRateLimit from 'express-rate-limit'
 
 // Routes
 import user from './routes/user-route'
@@ -24,17 +22,12 @@ const rabbitMQ = new RabbitMQ();
     await connection()
     await rabbitMQ.connection()
     await rabbitMQ.consumer('user')
+    await rabbitMQ.consumer('token')
 })()
 
-app.use(expressRateLimit({
-    windowMs: 60 * 1000,
-    max: 50,
-    legacyHeaders: true
-}))
 app.use(express.json())
 app.use(helmet())
 app.use(cors())
-app.use(compression())
 
 const PORT = process.env.PORT || 3000
 

@@ -1,13 +1,11 @@
 import express from 'express'
-import compression from 'compression'
-import cors from 'cors'
 import dotenv from 'dotenv'
 import fs from 'fs'
 import spdy from 'spdy'
 import helmet from 'helmet'
-import expressRateLimit from 'express-rate-limit'
 
 // Settings
+import connection from './settings/mongodb';
 import RabbitMQ from './settings/rabbitMQ'
 
 // Routes
@@ -21,28 +19,17 @@ const rabbit = new RabbitMQ();
 const PORT = process.env.PORT || 3000;
 
 (async () => {
+    await connection()
     await rabbit.connection()
+    await rabbit.consumer('publication')
 })()
 
-app.use(expressRateLimit({
-    windowMs: 60 * 1000,
-    max: 5,
-    legacyHeaders: true
-}))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(helmet())
-app.use(cors())
-app.use(compression())
 
 // Use Routes
 app.use('/publication', publication)
-
-app.get('/', (_, res) => {
-    res.status(200).json({
-        status: 'success',
-        message: 'Project is working : )'
-    })
-})
 
 const server = spdy.createServer({
     cert: fs.readFileSync(__dirname + '/../server.crt'),

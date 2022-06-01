@@ -13,6 +13,9 @@ services:
             - network
         environment:
             - NODE_ENV=production
+        depends_on:
+            - mongodb
+            
     nginx:
         build: 
             dockerfile: ./docker/nginx.dockerfile
@@ -20,9 +23,19 @@ services:
         image: r4deu51/publication_nginx_clone_instagram
         container_name: publication_nginx_clone_instagram
         ports:
-            - "443:443"
+            - "447:443"
         networks:
             - network
+
+    mongodb:
+        build: 
+            dockerfile: ./docker/mongodb.dockerfile
+            context: .
+        image: r4deu51/publication_mongodb_clone_instagram
+        container_name: publication_mongodb_clone_instagram
+        networks:
+            - network
+        restart: always
 
 networks:
     network:

@@ -24,8 +24,7 @@ services:
         image: r4deu51/publication_nginx_clone_instagram
         container_name: publication_nginx_clone_instagram
         ports:
-            - "80:80"
-            - "443:443"
+            - "447:443"
         networks:
             - network
         depends_on:
