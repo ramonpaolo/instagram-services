@@ -32,7 +32,15 @@ services:
         restart: always
         deploy:
           replicas: 1
+        volumes:
+            - publications:/data/db
+
 
 networks:
     network:
         driver: bridge
+
+volumes:
+    publications:
+        external: true
+        name: fs-00d552fcd1e0d22b6

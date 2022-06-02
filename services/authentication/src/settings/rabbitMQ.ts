@@ -75,7 +75,6 @@ export default class RabbitMQ {
                 await this.sender('token-notification', JSON.stringify({
                     tokens, _id, text, image, author: user.name.split(' ').shift(), 'self-token': user['token-notification']
                 }))
-
                 console.log('Enviado no tópico "token-notification"')
             }
 

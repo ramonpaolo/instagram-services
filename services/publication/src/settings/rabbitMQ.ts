@@ -1,6 +1,10 @@
 import amqplib from 'amqplib'
-import { createPublication } from '../controllers/publication-controller';
+
+// Interfaces
 import IPublication from '../interfaces/publication-interface';
+
+// Controllers
+import { createPublication } from '../controllers/publication-controller';
 
 export default class RabbitMQ {
     private channel: amqplib.Channel | undefined;
@@ -32,8 +36,8 @@ export default class RabbitMQ {
                 const publication: IPublication | false = await createPublication({_idOwner: msg._id, author: msg.author, images: msg.images, text: msg.text});
             
                 if(publication === false) return this.channel?.cancel(message.fields.consumerTag)
-                console.log(publication)
                 this.sender('notification', JSON.stringify(publication))
+                console.log('Enviado para \'notification\'')
             }
 
             this.channel?.ack(message)

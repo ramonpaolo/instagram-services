@@ -59,8 +59,9 @@ app.route('/').post(mul.array('images'), async (req, res) => {
     urlImages.shift()
 
     const { text, name, _id }: { text: string, name: string, _id: number } = req.body
-    
+
     rabbit.sender('publication', JSON.stringify({ text, images: urlImages, author: name, _id }))
+    console.log('Enviado para \'publication\'')
 
     res.status(200).json({status: 'success', message: 'Received request to publication'})
 })

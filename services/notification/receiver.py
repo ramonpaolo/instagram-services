@@ -29,7 +29,7 @@ class PikaConsumer():
 
     def on_message(self, ch, method, header, body):
         payload = json.loads(body)
-        print(payload)
+        print('Channel:', method.routing_key, '  -  Payload:',payload)
         if method.routing_key == 'notification':
             _id = payload["_idOwner"]
             text = payload["text"]
@@ -54,12 +54,10 @@ class PikaConsumer():
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
     def consumer(self):
-        print("Iniciando consumers...")
-        time.sleep(5)
         channel.basic_consume('token-notification', on_message_callback=self.on_message)
         channel.basic_consume('notification', on_message_callback=self.on_message)
-        channel.start_consuming()
-        # try:
-        # except KeyboardInterrupt:
-        #     channel.stop_consuming()
-        #     channel.close()
+        try:
+            channel.start_consuming()
+        except KeyboardInterrupt:
+            channel.stop_consuming()
+            channel.close()

@@ -16,10 +16,16 @@ services:
         depends_on:
             - mongodb
         deploy:
-          x-aws-autoscaling:
-            min: 1
-            max: 2
-            cpu: 75
+            x-aws-autoscaling:
+                min: 1
+                max: 2
+                cpu: 75
+            # resources:
+            #     limits:
+            #       cpus: 0.5
+            #       memory: '500Mb'
+            #     reservations:
+            #       cpus: 0
 
     mongodb:
         build: 
@@ -32,7 +38,13 @@ services:
         restart: always
         deploy:
           replicas: 1
+        volumes:
+            - users:/data/db
 
 networks:
     network:
         driver: bridge
+volumes:
+    users:
+        external: true
+        name: fs-0fc58f7a0004ec4cd
