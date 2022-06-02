@@ -11,6 +11,8 @@ O projeto consiste em utilizar boas práticas da arquitetura microservices, com:
 - NodeJs
     - ExpressJs
     - TypeScript
+    - Supertest
+    - HTTP/2.0
 - Python
     - Pika
 - Flutter
@@ -21,11 +23,12 @@ O projeto consiste em utilizar boas práticas da arquitetura microservices, com:
     - AWS S3
     - AWS ECS
     - AWS ELB
+    - AWS EFS
+    - AWS Fargate
 - Firebase
     - Firebase FCM
 - Docker
 - Docker Compose
-- NGINX
 
 # Como o projeto funciona?
 
@@ -37,8 +40,8 @@ Estou utilizando o serviço da Nuvem: [Cloud AMQP](https://www.cloudamqp.com/), 
 - 20 Conexões simultâneas(temos apenas 5 serviços, dá para o gasto)
 - 100 Tópicos/queues
 
-Também estou utilizando, a AWS para fazer deploy na nuvem, usando o serviço AWS ECS, AWS ELB, AWS S3.
-Estou utilizando o Firebase, especificamente para pegar o Token do celular do usuário, e mandar mensagem para os tokens(celulares).
+Também estou utilizando, a AWS para fazer deploy na nuvem, usando o serviço AWS ECS, AWS ELB, AWS S3, AWS EFS, AWS Fargate.
+Estou utilizando o Firebase, especificamente para pegar o Token do celular do usuário, e mandar notificação para os celulares.
 
 
 ## First Service - Authentication
@@ -55,7 +58,7 @@ No banco de dados MongoDB, são gravados os dados do usuário, como:
 
 O único serviço que tem a permissão, e as credenciais para se comunicar com esse banco de dados, é o serviço authentication. Qualquer serviço que deseje utilizar os dados desse serviço(dados do usuário), terá que fazer uma chamada via RabbitMQ(AMQP) para o serviço Authentication, aí o serviço Authentication irá pegar os dados do usuário, e mandar para o tópico onde ele foi requisitado.
 
-No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>authentication</kbd>, estão definidos 3 serviços, sendo eles:
+No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>authentication</kbd>, estão definidos 2 serviços, sendo eles:
 - NodeJs
 - MongoDB
 
