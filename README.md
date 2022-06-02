@@ -44,11 +44,6 @@ Estou utilizando o Firebase, especificamente para pegar o Token do celular do us
 ## First Service - Authentication
 O primeiro serviço(authentication), é o serviço responsável por fazer a autenticação do usuário, como criar o usuário no banco de dados.
 
-No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>authentication</kbd>, estão definidos 3 serviços, sendo eles:
-- NodeJs
-- NGINX
-- MongoDB
-
 Temos um banco de dados próprio para esse serviço. Isso é uma boa prática da arquitetura microservices, pois damos a responsabilidade dos dados apenas para um serviço.
 
 No banco de dados MongoDB, são gravados os dados do usuário, como:
@@ -60,38 +55,37 @@ No banco de dados MongoDB, são gravados os dados do usuário, como:
 
 O único serviço que tem a permissão, e as credenciais para se comunicar com esse banco de dados, é o serviço authentication. Qualquer serviço que deseje utilizar os dados desse serviço(dados do usuário), terá que fazer uma chamada via RabbitMQ(AMQP) para o serviço Authentication, aí o serviço Authentication irá pegar os dados do usuário, e mandar para o tópico onde ele foi requisitado.
 
-## Second Service - Validation Data
-O serviço de validação de dados, nada mais, irá validar se o usuário existe no banco de dados, e se os outros campos estão tudo OK, além de receber a original chamada HTTP POST da publicação de conteúdo.
+No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>authentication</kbd>, estão definidos 3 serviços, sendo eles:
+- NodeJs
+- MongoDB
 
-Após esse serviço validar rapidamente o usuário logado e os campos, ele irá enviar uma mensagem para o tópico 'reisze-image'
 
-## Third Service - Resize-Image
-O terceiro serviço, é responsável por fazer o resize das imagens recebidas via RabbitMQ(AMQP).
-
-O serviço recebe os dados via RabbitMQ, no formato JSON, junto com os Buffers das imagens do usuário, entre outros dados, como:
-- ID do Usuário
-- Imagens em Base64
-- Texto
-
-Após receber os dados via RabbitMQ, o serviço irá fazer resize das imagens, e após concluído, ele 
-
-## Fourth Service - Deploy on AWS S3
-
+## Second Service - Resize-Image
 O quarto serviço, será responsável por fazer o upload das imagens, na nuvem AWS S3.
 
-Esse serviço irá receber os dados via 
+Esse serviço irá receber os dados via chamada HTTP direta do aplicativo.
 
-irá fazer o deploy no S3, onde será retornado uma string para cada objeto/arquivo, feito deploy. Após o deploy de todas as imagens, ele irá enviar uma mensagem para o tópico 'publication', onde ele irá enviar os dados pegos pela API, junto com a URL dos objetos upados no AWS S3.
+Esse serviço irá receber os dados da chamada HTTP POST do usuário, para criação de conteúdo, e então, irá salvar as imagens no conteiner, até fazer o resize das imagens, e upload das imagens no AWS S3. Após fazer upload da imagem no AWS S3, será retornado a URL do arquivo no S3, então, ele irá mesclar com o serviço AWS CloudFront, para pegar a imagem mais rapidamente(em cache).
 
-Ops: Podemos observar, que poderíamos ter feito/usado, outros 2 serviços. Poderíamos ter criado um serviço, especificamente para fazer deploy na AWS S3, afinal, é um processo que pode demorar, e não queremos que o usuário fique na tela esperando a resposta HTTP com um status 200, dependendo do deploy das imagens na AWS S3. Ou um outro jeito, seria criarmos um serviço, que iria servir apenas para receber o conteúdo(imagens) do usuário, e adicionar o JSON recebido do usuário, em um tópico, para um outro serviço de fato dar continuidade, pondendo esse serviço, ser o de resize.
+Após pegar a imagem, ele irá pegar os dados JSON recebidos pela requisição HTTP, e com as strings das imagens feitas upload, irá enviar uma mensagem para o tópico 'publication', no RabbitMQ.
+
+No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>Resize-Image</kbd>, esta definido 1 serviço, sendo ele:
+- NodeJs
 
 ## Third Service - Publication
 O terceiro serviço, é responsável por adicionar os dados da publicação, no banco de dados.
 
-No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>publication</kbd>, estão definidos 3 serviços, sendo eles:
-- MongoDB
-- NodeJs
-- NGINX
+Esse serviço irá ouvir(consumer) as mensagens recebidas do serviço 'resize-image', para criar a publicação no banco de dados. Após criar a publicação no banco de dados, será enviado uma mensagem para o tópico 'notification'.
+
+Esse serviço também apresenta endpoints, para acesso das publicações que serão consumidas no aplicativo mobile.
+
+Endpoints:
+- /publications
+    - Retorna todas as publicações
+- /publication/:id
+    - Retorna uma publicação específica
+- /publication/user/:idUser
+    - Retorna as publicações de um usuário em específico
 
 Temos um banco de dados próprio para esse serviço. Isso é uma boa prática da arquitetura microservices, pois damos a responsabilidade dos dados apenas para um serviço.
 
@@ -99,9 +93,15 @@ No banco de dados MongoDB, são gravados os dados da publication, como:
 - ID Publication
 - ID Owner Publication User
 - text
-- image_1920
-- image_1080
-- image_720
-- image_480
+- images
 
 O único serviço que tem a permissão, e as credenciais para se comunicar com esse banco de dados, é o serviço publication. Qualquer serviço que deseje utilizar os dados desse serviço(dados da publicação), terá que fazer uma chamada via RabbitMQ(AMQP) para o serviço Publication, aí o serviço Publication irá pegar os dados da publicação, e mandar para o tópico onde ele foi requisitado.
+
+No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>publication</kbd>, estão definidos 2 serviços, sendo eles:
+- MongoDB
+- NodeJs
+
+## Fourth Service - Notification
+O quarto serviço, é responsável por fazer a notificação mobile(push) dos usuários que estão seguindo o usuário que fez a publicação.
+
+Esse serviço, feito em Python, irá consumir as mensagens recebidas do serviço 'publication', vai receber os dados da publicação, e então, irá enviar uma mensagem para o serviço 'authentication', requerindo os dados(token-notifications), de todos os usuários que estão seguindo o usuário que criou a publicação. Após receber a mensagem com os tokens dos usuários, ele irá enviar as notificações, usando o Firebase FMC.
