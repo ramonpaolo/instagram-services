@@ -12,7 +12,7 @@ O projeto consiste em utilizar boas práticas da arquitetura microservices, com:
     - ExpressJs
     - TypeScript
 - Python
-    - FastAPI
+    - Pika
 - Flutter
 - RabbitMQ(AMQP)
 - Arquitetura Microservices
@@ -30,20 +30,24 @@ O projeto consiste em utilizar boas práticas da arquitetura microservices, com:
 # Como o projeto funciona?
 
 ## Serviços de terceiros utilizados
-O projeto, utiliza 1 serviço de terceiro apenas, sendo o uso do RabbitMQ.
+O projeto, utiliza 3 serviços de terceiros, sendo o uso do RabbitMQ, AWS e Firebase.
+
 Estou utilizando o serviço da Nuvem: [Cloud AMQP](https://www.cloudamqp.com/), no qual possui os seguintes benefícios:
 - 1 milhão de mensagens gratuitas por mês
 - 20 Conexões simultâneas(temos apenas 5 serviços, dá para o gasto)
 - 100 Tópicos/queues
+
+Também estou utilizando, a AWS para fazer deploy na nuvem, usando o serviço AWS ECS, AWS ELB, AWS S3.
+Estou utilizando o Firebase, especificamente para pegar o Token do celular do usuário, e mandar mensagem para os tokens(celulares).
 
 
 ## First Service - Authentication
 O primeiro serviço(authentication), é o serviço responsável por fazer a autenticação do usuário, como criar o usuário no banco de dados.
 
 No arquivo <kbd>docker-compose.yaml</kbd>, no serviço <kbd>authentication</kbd>, estão definidos 3 serviços, sendo eles:
-- MongoDB
 - NodeJs
 - NGINX
+- MongoDB
 
 Temos um banco de dados próprio para esse serviço. Isso é uma boa prática da arquitetura microservices, pois damos a responsabilidade dos dados apenas para um serviço.
 

@@ -1,9 +1,13 @@
-FROM python
+FROM python:3.7-alpine
 
 WORKDIR /app
 
-COPY ./ ./.env ./
+COPY . .
 
-RUN /usr/local/bin/python -m pip install --upgrade pip && pip install -r requirements.txt
+RUN python -m venv /opt/venv
 
-CMD ["python", "./main.py"]
+RUN pip install -r requirements.txt
+
+# RUN echo $PATH
+
+CMD ["python", "main.py"]

@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-    nodejs:
+    python:
         build:
             dockerfile: ./docker/python.dockerfile
             context: .
@@ -9,6 +9,11 @@ services:
         container_name: notification_python_clone_instagram
         networks:
             - network
+        deploy:
+          x-aws-autoscaling:
+            min: 1
+            max: 2
+            cpu: 75
 
 networks:
     network:

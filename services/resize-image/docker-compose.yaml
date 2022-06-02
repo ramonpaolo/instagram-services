@@ -13,16 +13,11 @@ services:
             - network
         environment:
             - NODE_ENV=production
-    nginx:
-        build: 
-            dockerfile: ./docker/nginx.dockerfile
-            context: .
-        image: r4deu51/resize_nginx_clone_instagram
-        container_name: resize_nginx_clone_instagram
-        ports:
-            - "446:443"
-        networks:
-            - network
+        deploy:
+          x-aws-autoscaling:
+            min: 1
+            max: 2
+            cpu: 75
 
 networks:
     network:
