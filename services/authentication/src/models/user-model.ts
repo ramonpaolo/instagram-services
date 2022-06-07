@@ -2,15 +2,16 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     _id: {
-        required: false,
-        type: Number,
-        default: () => {
-            return new Date().getTime()
-        }
+        required: true,
+        type: String,
     },
     name: {
         required: true,
         minlength: 4,
+        type: String
+    },
+    image: {
+        required: true,
         type: String
     },
     'token-notification': {
@@ -22,7 +23,25 @@ const userSchema = new mongoose.Schema({
         required: false,
         type: Array,
         default: []
-    }
+    },
+    following: {
+        required: false,
+        type: Array,
+        default: []
+    },
+    email: {
+        required: true,
+        type: String,
+        minlength: 12
+    },
+    'verified-email': {
+        type: Boolean,
+        default: false
+    },
+    password: {
+        required: true,
+        type: String,
+    },
 })
 
 const UserModel = mongoose.model('user', userSchema)
