@@ -1,10 +1,14 @@
 # Clone Instagram Using Microservices
 
-![Banner Instagram Services](https://ik.imagekit.io/9t3dbkxrtl/Instagram_Services_vYFxKTYm-.png?ik-sdk-version=javascript-1.4.3&updatedAt=1654200062817)
+![Banner Instagram Services](https://ik.imagekit.io/9t3dbkxrtl/Instagram_Services__1__x5S-puUZF.png?ik-sdk-version=javascript-1.4.3&updatedAt=1654200480323)
 
+<div align="center">
+    
 ![GitHub top language](https://img.shields.io/github/languages/top/ramonpaolo/instagram-services)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/ramonpaolo/instagram-services)
 ![GitHub](https://img.shields.io/github/license/ramonpaolo/instagram-services)
+    
+</div>
 
 ---
 
