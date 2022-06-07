@@ -14,5 +14,11 @@ jobs:
         with:
           node-version: 14.17
 
+      - name: Enter in service authentication
+        run: cd ././services/authentication
+
+      - name: Install all dependencies
+        run: yarn Install
+
       - name: Run Tests in microservice authentication
-        run: cd ./services/authentication && yarn test
+        run: yarn jest
