@@ -4,7 +4,7 @@ import IPublication from '../interfaces/publication-interface';
 // Models
 import PublicationModel from '../models/publication-model';
 
-async function createPublication(publication_data: {text: string, _idOwner: number, images: string[], author: string}) {
+async function createPublication(publication_data: { text: string, _idOwner: string, images: string[], author: string }) {
     try {
         const publication: IPublication = await PublicationModel.create(publication_data)
         return publication
@@ -25,9 +25,9 @@ async function getPublication(_id: number) {
     }
 }
 
-async function getPublicationByUser(_idOwner: number) {
+async function getPublicationByUser(_idOwner: string) {
     try {
-        const publication = await PublicationModel.find({_idOwner:_idOwner})
+        const publication = await PublicationModel.find({ _idOwner })
         console.log(publication)
         return publication
     } catch (e) {
@@ -46,4 +46,14 @@ async function getPublications() {
     }
 }
 
-export { createPublication, getPublication, getPublicationByUser, getPublications }
+async function deletePublicationByUser(_id: number) {
+    try {
+        const publications: IPublication | null = await PublicationModel.findByIdAndDelete(_id);
+        return publications
+    } catch (e) {
+        console.log(e)
+        return false;
+    }
+}
+
+export { createPublication, getPublication, getPublicationByUser, getPublications, deletePublicationByUser }
