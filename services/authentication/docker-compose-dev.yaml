@@ -8,9 +8,10 @@ services:
         image: r4deu51/authentication_node_clone_instagram
         container_name: authentication_node_clone_instagram
         ports:
-            - "3000"
+            - "3000:3000"
         volumes:
             - ./:/app:rw
+            - /app/node_modules
         networks:
             - network
         environment:
