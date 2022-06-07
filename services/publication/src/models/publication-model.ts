@@ -20,7 +20,7 @@ const publicationSchema = new mongoose.Schema({
         maxlength: 5
     },
     _idOwner: {
-        type: Number,
+        type: String,
         required: true
     }
 })
