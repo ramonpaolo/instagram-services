@@ -2,7 +2,6 @@ import amqplib from 'amqplib'
 
 // Controllers
 import { getDataUser } from '../controllers/user-controller';
-// import IPublication from '../interfaces/publication-interface';
 
 export default class RabbitMQ {
     private channel: amqplib.Channel | undefined;
@@ -26,45 +25,21 @@ export default class RabbitMQ {
         await this.channel?.assertQueue(queue)
         this.channel?.consume(queue, async (message) => {
             if (message === null) return null;
+            if(queue === 'token'){
 
-            // const messageJSON: { users: { _id: number }[]} = JSON.parse(message.content.toString('utf-8'))
-
-            if(queue === 'user'){
-                // const tokens: string[] = [''];
-    
-                // await Promise.all(messageJSON.users.map(async (v) => {
-                //     const data = await getDataUser(v._id)
-                //     if (data !== false) {
-                //         tokens.push(data['token-notification'])
-                //     }
-    
-                // }))
-    
-                // tokens.shift()
-    
-                // await this.sender('token-notification', JSON.stringify({
-                //     tokens, publication: {
-                //         text: 'Chegando em sorocaba!!!',
-                //         image: 'https://cdn.pixabay.com/photo/2022/05/18/10/27/sea-7204955__340.jpg',
-                //         author: 'Ramon',
-                //         title: 'Publicação nova de Ramon'
-                //     }
-                // }))
-            }else if(queue === 'token'){
-                const {_id, text, image}: { _id: number, text: string, image: string} = JSON.parse(message.content.toString('utf-8'))
+                console.log(JSON.parse(message.content.toString('utf-8')))
+                const {_id, text, image}: { _id: string, text: string, image: string} = JSON.parse(message.content.toString('utf-8'))
 
                 const tokens: string[] = [''];
     
                 const user = await getDataUser(_id)
 
-                if(user === false) return this.channel?.cancel(message.fields.consumerTag)
-
-                console.log('Followers: ', user.followers)
+                if(user === false) return ;
 
                 const followers = user.followers
 
                 await Promise.all(followers.map(async (v) => {
-                    const data = await getDataUser(Number(v))
+                    const data = await getDataUser(v)
                     if (data !== false) {
                         tokens.push(data['token-notification'])
                     }
