@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Give access to our code/github
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup NodeJs
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 14.17
 
       - name: Run Tests in microservice authentication
-      - run: cd ./services/authentication && yarn test
+        run: cd ./services/authentication && yarn test
