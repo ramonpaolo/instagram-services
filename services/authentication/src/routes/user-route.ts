@@ -1,5 +1,5 @@
 import express from 'express'
-import fs from 'fs'
+import multer from 'multer'
 
 // Controllers
 import { createUser, deleteUser, getDataUser, updateToken, updateUser, verifyAccount } from '../controllers/user-controller'
@@ -7,9 +7,11 @@ import { comparePassword } from '../controllers/crypt-controller'
 
 // Middlewares
 import { validationEmail, validationName, validationPassword, validationTokenNotification } from '../middlewares/validation-field'
+import verifyImage from '../middlewares/verify-image'
+
+// Interfaces
 import IUser from '../interfaces/user-interface'
-import { setS3, uploadAWS } from '../controllers/upload-controller'
-import multer from 'multer'
+
 
 const app = express();
 
@@ -23,25 +25,8 @@ const storage = multer.diskStorage({
 const mul = multer({ storage })
 
 // POST Authentication
-app.post('/register', mul.single('image'), validationName, validationTokenNotification, validationEmail, validationPassword, async (req, res) => {
-
-    const s3 = await setS3();
-
-    const file: Express.Multer.File | undefined = req.file;
-    if (file == undefined) return res.status(404).json({ status: 'error', message: 'file not specificed' })
-
-    const bitmap = fs.readFileSync(file.path)
-
-    const nameLowerCase = req.body.name.toLowerCase().split(' ')
-    const nick = nameLowerCase.join('')
-
-    const urlImageUser = await uploadAWS(s3, nick, bitmap)
-
-    fs.rmSync(file.path)
-
-    if (urlImageUser === null) return res.status(401).json({ status: 'error', message: 'image can\' be made upload' })
-
-    const user: false | IUser = await createUser(req.body.name, req.body['token-notification'], req.body.email, req.body.password, urlImageUser)
+app.post('/register', mul.single('image'), verifyImage, validationName, validationTokenNotification, validationEmail, validationPassword, async (req, res) => {
+    const user: false | IUser = await createUser(req.body.name, req.body['token-notification'], req.body.email, req.body.password, res.locals.image)
 
     if (user === false)
         return res.status(404).json({

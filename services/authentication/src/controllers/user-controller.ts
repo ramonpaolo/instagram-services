@@ -1,3 +1,5 @@
+import { S3 } from 'aws-sdk';
+
 // User Model
 import UserModel from '../models/user-model'
 import VerifyEmail from '../models/verify-email-model';
@@ -7,6 +9,7 @@ import IUser from '../interfaces/user-interface';
 
 // Controllers
 import { cryptPassword } from './crypt-controller';
+import { setS3, uploadAWS } from './upload-controller';
 
 // Services
 import NodeMailer from '../services/nodemailer-service';
@@ -14,14 +17,25 @@ import NodeMailer from '../services/nodemailer-service';
 // Define NodeMailer service
 const mailer = new NodeMailer();
 
-async function createUser(name: string, tokenNotification: string, email: string, password: string, image: string): Promise<IUser | false> {
+let s3: S3;
+
+(async () => {
+    s3 = await setS3();
+})()
+
+async function createUser(name: string, tokenNotification: string, email: string, password: string, image: Buffer): Promise<IUser | false> {
     const cryptedPassword = await cryptPassword(password)
     const nameLowerCase = name.toLowerCase().split(' ')
     const nick = nameLowerCase.join('')
     try {
+
+        const urlImage = await uploadAWS(s3, nick, image)
+
+        if (urlImage === null) return false;
+
         const user: IUser = await UserModel.create({
             _id: nick,
-            name, 'token-notification': tokenNotification, email, password: cryptedPassword, image
+            name, 'token-notification': tokenNotification, email, password: cryptedPassword, image: urlImage
         })
 
         const verifyEmail = await VerifyEmail.create({
