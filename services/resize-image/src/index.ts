@@ -6,7 +6,7 @@ import spdy from 'spdy'
 import helmet from 'helmet'
 
 // Routes
-import resize from './routes/resize-route'
+import resize from './routes/resize.route'
 
 dotenv.config()
 

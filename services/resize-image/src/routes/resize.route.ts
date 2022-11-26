@@ -4,10 +4,10 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 
 // Settings
-import RabbitMQ from '../settings/rabbitMQ'
+import RabbitMQ from '../settings/rabbitmq.settings'
 
 // Controllers
-import { setS3, uploadAWS } from '../controllers/upload-controller'
+import { setS3, uploadAWS } from '../controllers/upload.controller'
 import { S3 } from 'aws-sdk'
 
 dotenv.config()
