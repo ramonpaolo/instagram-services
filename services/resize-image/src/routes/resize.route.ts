@@ -9,6 +9,7 @@ import RabbitMQ from '../settings/rabbitmq.settings'
 // Controllers
 import { setS3, uploadAWS } from '../controllers/upload.controller'
 import { S3 } from 'aws-sdk'
+import IFile from '../interfaces/file.interface'
 
 dotenv.config()
 
@@ -22,13 +23,6 @@ const storage = multer.diskStorage({
 })
 
 const mul = multer({ storage })
-
-interface IFile {
-    originalname: string;
-    mimetype: string;
-    filename: string;
-    size: number;
-}
 
 const rabbit = new RabbitMQ();
 
